@@ -1,13 +1,6 @@
 const statusCode = require('./statusCode');
 const response = require('./response');
-const AWS = require('aws-sdk');
-
-const ddb = new AWS.DynamoDB.DocumentClient(
-  {
-    apiVersion: '2012-08-10',
-    region: process.env.AWS_REGION,
-  }
-);
+const ddbClient = require('./ddb');
 
 exports.handler = async event => {
   const putParams = {
@@ -18,7 +11,7 @@ exports.handler = async event => {
   };
 
   try {
-    await ddb.put(putParams).promise();
+    await ddbClient.put(putParams).promise();
   } catch (err) {
     return response(statusCode.bad, 'Failed to connect: ' + JSON.stringify(err));
   }

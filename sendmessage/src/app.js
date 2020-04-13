@@ -1,9 +1,5 @@
-// Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-const AWS = require('aws-sdk');
-
-const ddb = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10', region: process.env.AWS_REGION });
+const response = require('./response');
+const ddbClient = require('./ddb');
 
 const { TABLE_NAME } = process.env;
 
@@ -11,9 +7,9 @@ exports.handler = async event => {
   let connectionData;
 
   try {
-    connectionData = await ddb.scan({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId' }).promise();
+    connectionData = await ddbClient.scan({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId' }).promise();
   } catch (e) {
-    return { statusCode: 500, body: e.stack };
+    return response(500, e.stack);
   }
 
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
@@ -29,7 +25,7 @@ exports.handler = async event => {
     } catch (e) {
       if (e.statusCode === 410) {
         console.log(`Found stale connection, deleting ${connectionId}`);
-        await ddb.delete({ TableName: TABLE_NAME, Key: { connectionId } }).promise();
+        await ddbClient.delete({ TableName: TABLE_NAME, Key: { connectionId } }).promise();
       } else {
         throw e;
       }
@@ -39,8 +35,8 @@ exports.handler = async event => {
   try {
     await Promise.all(postCalls);
   } catch (e) {
-    return { statusCode: 500, body: e.stack };
+    return response(500, e.stack);
   }
 
-  return { statusCode: 200, body: 'Data sent.' };
+  return response(200, 'Data sent.');
 };
