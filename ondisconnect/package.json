@@ -1,0 +1,8 @@
+{
+  "name": "on-disconnect",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "aws-sdk": "^2.434.0"
+  }
+}
