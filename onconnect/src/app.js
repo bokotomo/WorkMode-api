@@ -2,6 +2,8 @@ const statusCode = require('./statusCode');
 const response = require('./response');
 const ddbClient = require('./ddb');
 
+// コネクション確立時
+// KVSへ自身のコネクションIDを保存する。
 exports.handler = async event => {
   const putParams = {
     TableName: process.env.TABLE_NAME,

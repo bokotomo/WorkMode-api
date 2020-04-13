@@ -1,3 +1,3 @@
-module.exports = function (statusCode, body) {
+module.exports = (statusCode, body) => {
     return { statusCode, body };
 }
