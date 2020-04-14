@@ -6,7 +6,6 @@ const { TABLE_NAME } = process.env;
 
 exports.handler = async event => {
   let connectionData;
-
   try {
     connectionData = await ddbClient.scan({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId' }).promise();
   } catch (e) {
@@ -15,6 +14,18 @@ exports.handler = async event => {
   const apigwClient = apiGatewayAPI(event.requestContext.domainName + '/' + event.requestContext.stage)
 
   const postData = JSON.parse(event.body).data;
+  switch (postData.type) {
+    case 'authentication':
+      const myConnectionId = "";
+      const date = {
+        name: "OK",
+      };
+      await apigwClient.postToConnection({ ConnectionId: myConnectionId, Data: date }).promise();
+      break;
+    case '':
+      break;
+    default:
+  }
 
   const postCalls = connectionData.Items.map(async ({ connectionId }) => {
     try {
