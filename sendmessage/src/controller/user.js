@@ -1,8 +1,8 @@
 const ddbClient = require('./ddb');
 const apiGatewaySend = require('./apiGatewaySend');
 
-module.exports = async (apigwClient, myConnectionId, postData, role) => {
-    // const token = postData.token;
+module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
+    const token = postData.token;
     const data = {
         role,
         name: "OK",

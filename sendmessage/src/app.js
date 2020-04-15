@@ -1,18 +1,23 @@
 const response = require('./response');
-const ddbClient = require('./ddb');
 const apiGatewayAPI = require('./apiGateway');
 const controllerAuthentication = require('./controller/authentication');
+const controllerUser = require('./controller/user');
 
 const routing = async (apigwClient, myConnectionId, postData) => {
   switch (postData.role) {
     case 'authentication':
       try {
-        await controllerAuthentication(apigwClient, myConnectionId, postData);
+        await controllerAuthentication(apigwClient, myConnectionId, postData, 'authentication');
       } catch (e) {
         throw e;
       }
       break;
-    case 'tokomo':
+    case 'user_create':
+      try {
+        await controllerUser.create(apigwClient, myConnectionId, postData, 'user_create');
+      } catch (e) {
+        throw e;
+      }
       break;
     default:
       throw new Error('not found routing');
