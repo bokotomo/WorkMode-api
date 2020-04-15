@@ -1,50 +1,42 @@
 const response = require('./response');
 const ddbClient = require('./ddb');
 const apiGatewayAPI = require('./apiGateway');
+const controllerAuthentication = require('./controller/authentication');
 
-const { TABLE_NAME } = process.env;
-
-exports.handler = async event => {
-  let connectionData;
-  try {
-    connectionData = await ddbClient.scan({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId' }).promise();
-  } catch (e) {
-    return response(500, e.stack);
-  }
-  const apigwClient = apiGatewayAPI(event.requestContext.domainName + '/' + event.requestContext.stage)
-
-  const postData = JSON.parse(event.body).data;
-  switch (postData.type) {
+const routing = async (apigwClient, myConnectionId, postData) => {
+  switch (postData.role) {
     case 'authentication':
-      const myConnectionId = "";
-      const date = {
-        name: "OK",
-      };
-      await apigwClient.postToConnection({ ConnectionId: myConnectionId, Data: date }).promise();
-      break;
-    case '':
-      break;
-    default:
-  }
-
-  const postCalls = connectionData.Items.map(async ({ connectionId }) => {
-    try {
-      await apigwClient.postToConnection({ ConnectionId: connectionId, Data: postData }).promise();
-    } catch (e) {
-      if (e.statusCode === 410) {
-        console.log(`Found stale connection, deleting ${connectionId}`);
-        await ddbClient.delete({ TableName: TABLE_NAME, Key: { connectionId } }).promise();
-      } else {
+      try {
+        await controllerAuthentication(apigwClient, myConnectionId, postData);
+      } catch (e) {
         throw e;
       }
-    }
-  });
+      break;
+    case 'tokomo':
+      break;
+    default:
+      throw new Error('not found routing');
+  }
+}
+
+const main = async event => {
+  const postData = JSON.parse(event.body).data;
+  const endpoint = event.requestContext.domainName + '/' + event.requestContext.stage;
+  const apigwClient = apiGatewayAPI(endpoint);
+  const myConnectionId = event.requestContext.connectionId;
 
   try {
-    await Promise.all(postCalls);
+    await routing(apigwClient, myConnectionId, postData);
+  } catch (e) {
+    throw e;
+  }
+}
+
+exports.handler = async event => {
+  try {
+    await main(event);
   } catch (e) {
     return response(500, e.stack);
   }
-
   return response(200, 'Data sent.');
 };
