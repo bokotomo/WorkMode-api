@@ -13,7 +13,6 @@ module.exports.create = async (name) => {
             name,
         }
     };
-
     try {
         await ddbClient.put(putParams).promise();
     } catch (err) {

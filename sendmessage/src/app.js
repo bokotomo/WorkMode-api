@@ -1,4 +1,3 @@
-const response = require('./response');
 const apiGatewayAPI = require('./driver/apiGateway');
 const controllerAuthentication = require('./controller/authentication');
 const controllerUser = require('./controller/user');
@@ -24,7 +23,7 @@ const routing = async (apigwClient, myConnectionId, postData) => {
   }
 }
 
-const main = async event => {
+module.exports = async event => {
   const postData = JSON.parse(event.body).data;
   const endpoint = event.requestContext.domainName + '/' + event.requestContext.stage;
   const apigwClient = apiGatewayAPI(endpoint);
@@ -36,12 +35,3 @@ const main = async event => {
     throw e;
   }
 }
-
-exports.handler = async event => {
-  try {
-    await main(event);
-  } catch (e) {
-    return response(500, e.stack);
-  }
-  return response(200, 'Data sent.');
-};

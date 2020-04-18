@@ -4,5 +4,8 @@
   "main": "./src/app.js",
   "dependencies": {
     "aws-sdk": "^2.434.0"
+  },
+  "scripts": {
+    "deploy": "zip -r prod.zip ./ -x \"*.zip\" && aws lambda update-function-code --function-name OnConnect --zip-file fileb://prod.zip"
   }
 }
