@@ -1,15 +1,14 @@
-const ddbClient = require('../ddb');
-const apiGatewaySend = require('../apiGatewaySend');
+const apiGatewaySend = require('../driver/apiGatewaySend');
+const repositoryUser = require('../repository/user');
 
 module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
     const name = postData.name;
-    const id = 'iidd'
-    const token = 'otokkken'
+    const res = repositoryUser.create(name)
     const data = {
         role,
-        id,
+        id: res.id,
         name,
-        token,
+        token: res.token,
     };
     try {
         await apiGatewaySend(apigwClient, myConnectionId, data);

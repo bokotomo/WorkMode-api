@@ -1,5 +1,4 @@
-const ddbClient = require('../ddb');
-const apiGatewaySend = require('../apiGatewaySend');
+const apiGatewaySend = require('../driver/apiGatewaySend');
 
 module.exports = async (apigwClient, myConnectionId, postData, role) => {
     const token = postData.token;

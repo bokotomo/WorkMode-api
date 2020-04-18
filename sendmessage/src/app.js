@@ -1,5 +1,5 @@
 const response = require('./response');
-const apiGatewayAPI = require('./apiGateway');
+const apiGatewayAPI = require('./driver/apiGateway');
 const controllerAuthentication = require('./controller/authentication');
 const controllerUser = require('./controller/user');
 
