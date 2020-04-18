@@ -12,7 +12,8 @@ const createToken = (id, SECRET_KEY) => {
     }
 }
 
-module.exports.create = async (name) => {
+// [TODO ビジネスロジックの分離。でもそこまでやるなら静的言語でやりたい]
+module.exports.create = async (name, connectionId) => {
     const id = uniqid();
     const SECRET_KEY = process.env.SECRET_KEY;
     const [token, err] = createToken(id, SECRET_KEY);
@@ -25,6 +26,7 @@ module.exports.create = async (name) => {
             id,
             token,
             name,
+            connectionId,
         }
     };
     try {
