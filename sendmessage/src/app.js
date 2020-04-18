@@ -5,22 +5,22 @@ const controllerUser = require('./controller/user');
 const routing = async (apigwClient, myConnectionId, postData) => {
   switch (postData.role) {
     case 'authentication':
-      try {
-        await controllerAuthentication(apigwClient, myConnectionId, postData, 'authentication');
-      } catch (e) {
-        throw e;
+      {
+        const [err] = await controllerAuthentication(apigwClient, myConnectionId, postData, 'authentication');
+        if (err !== null) return [err]
       }
       break;
     case 'user_create':
-      try {
-        await controllerUser.create(apigwClient, myConnectionId, postData, 'user_create');
-      } catch (e) {
-        throw e;
+      {
+        const [err] = await controllerUser.create(apigwClient, myConnectionId, postData, 'user_create');
+        if (err !== null) return [err]
       }
       break;
     default:
-      throw new Error('not found routing');
+      return [new Error('not found routing')]
   }
+
+  return [null]
 }
 
 module.exports = async event => {
@@ -29,9 +29,5 @@ module.exports = async event => {
   const apigwClient = apiGatewayAPI(endpoint);
   const myConnectionId = event.requestContext.connectionId;
 
-  try {
-    await routing(apigwClient, myConnectionId, postData);
-  } catch (e) {
-    throw e;
-  }
+  return await routing(apigwClient, myConnectionId, postData);
 }

@@ -3,16 +3,14 @@ const repositoryUser = require('../repository/user');
 
 module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
     const name = postData.name;
-    const res = repositoryUser.create(name)
+    const [id, token, err] = await repositoryUser.create(name)
+    if (err !== null) return [err]
+
     const data = {
         role,
-        id: res.id,
+        id,
         name,
-        token: res.token,
+        token,
     };
-    try {
-        await apiGatewaySend(apigwClient, myConnectionId, data);
-    } catch (e) {
-        throw e;
-    }
+    return await apiGatewaySend(apigwClient, myConnectionId, data);
 }

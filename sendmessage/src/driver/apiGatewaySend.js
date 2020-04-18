@@ -7,12 +7,13 @@ module.exports = async (apigwClient, ConnectionId, data) => {
             ConnectionId,
             Data: JSON.stringify(data)
         }).promise();
-    } catch (e) {
-        if (e.statusCode === 410) {
+    } catch (err) {
+        if (err.statusCode === 410) {
             console.log(`Found stale connection, deleting ${ConnectionId}`);
             await ddbClient.delete({ TableName: TABLE_NAME, Key: { ConnectionId } }).promise();
         } else {
-            throw e;
+            return [err]
         }
     }
+    return [null]
 }

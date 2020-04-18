@@ -5,5 +5,10 @@ wscat -c wss://~~~
 {"action":"sendmessage", "data":"hello world"}
 ```
 
-# FRONT  
+## Upload
+```
+npm run deploy
+```
+
+## FRONT  
 https://github.com/bokotomo/WorkMode-front  

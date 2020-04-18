@@ -7,9 +7,6 @@ module.exports = async (apigwClient, myConnectionId, postData, role) => {
         role,
         isLogined,
     };
-    try {
-        await apiGatewaySend(apigwClient, myConnectionId, data);
-    } catch (e) {
-        throw e;
-    }
+
+    return await apiGatewaySend(apigwClient, myConnectionId, data);
 }
