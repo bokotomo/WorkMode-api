@@ -74,9 +74,33 @@ module.exports.activerUserSearch = async () => {
     }
     const users = userData.Items
         .filter(({ id }) => userIds.includes(id))
-        .map(({ id, name }) => {
-            return { id, name }
-        })
+    // .map(({ id, name }) => {
+    //     return { id, name }
+    // })
 
     return [users, null]
+}
+
+module.exports.update = async (connectionId, id) => {
+    var params = {
+        TableName: 'workmode_users',
+        Key: {
+            id,
+        },
+        UpdateExpression: "set connectionId = :connectionId",
+        ExpressionAttributeValues: {
+            ":connectionId": connectionId,
+        },
+        ReturnValues: "UPDATED_NEW"
+    };
+
+    try {
+        await ddbClient.update(params, (err, data) => {
+            if (err) throw err;
+        }).promise();
+    } catch (err) {
+        return [err]
+    }
+
+    return [null]
 }

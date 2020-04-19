@@ -9,16 +9,33 @@ module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
     const [userID, token, err] = await repositoryUser.create(name, myConnectionId)
     if (err !== null) return [err]
 
+    // コネクションにID紐づける
     const [errConnection] = await repositoryConnection.update(myConnectionId, userID);
     if (errConnection !== null) return [errConnection]
 
+    // 自分へ登録完了を通知
     const data = {
         role,
         id: userID,
         name,
         token,
     };
-    return await apiGatewaySend(apigwClient, myConnectionId, data);
+    const [errSend] = await apiGatewaySend(apigwClient, myConnectionId, data);
+    if (errSend !== null) return [errSend]
+
+    // 全員へ通知
+    const [users, errSearch] = await repositoryUser.activerUserSearch()
+    if (errSearch !== null) return [errSearch]
+    users.forEach(async ({ connectionId }) => {
+        const data = {
+            role: 'active_user_search',
+            users,
+        };
+        const [errActiveUser] = await apiGatewaySend(apigwClient, connectionId, data);
+        if (errActiveUser !== null) return [errConnection]
+    });
+
+    return [null]
 }
 
 module.exports.activeUserSearch = async (apigwClient, myConnectionId, postData, role) => {

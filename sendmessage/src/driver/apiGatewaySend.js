@@ -1,5 +1,4 @@
 const ddbClient = require('./ddb');
-const { TABLE_NAME } = process.env;
 
 module.exports = async (apigwClient, ConnectionId, data) => {
     try {
@@ -9,11 +8,10 @@ module.exports = async (apigwClient, ConnectionId, data) => {
         }).promise();
     } catch (err) {
         if (err.statusCode === 410) {
-            console.log(`Found stale connection, deleting ${ConnectionId}`);
-            await ddbClient.delete({ TableName: TABLE_NAME, Key: { ConnectionId } }).promise();
-        } else {
-            return [err]
+            console.log(`コネクションエラー, deleting ${ConnectionId}`);
+            await ddbClient.delete({ TableName: 'workmode_connections', Key: { ConnectionId } }).promise();
         }
+        return [err]
     }
     return [null]
 }
