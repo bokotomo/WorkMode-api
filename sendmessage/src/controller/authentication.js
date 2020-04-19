@@ -1,22 +1,15 @@
 const apiGatewaySend = require('../driver/apiGatewaySend');
+const repositoryAuthentication = require('../repository/authentication');
+const repositoryConnection = require('../repository/connection');
 
 module.exports = async (apigwClient, myConnectionId, postData, role) => {
     const token = postData.token;
-    const params = {
-        TableName: 'workmode_users',
-        Key: {
-            token,
-        }
-    };
-    let connectionData;
-    try {
-        connectionData = await ddbClient.scan(params).promise();
-    } catch (err) {
-        return [err]
-    }
+    const [isLogined, userID, err] = await repositoryAuthentication(token);
+    if (err !== null) return [err]
 
-    console.log(connectionData.Items)
-    const isLogined = connectionData.Items.length !== 0;
+    const [errConnection] = await repositoryConnection.update(myConnectionId, userID);
+    if (errConnection !== null) return [errConnection]
+
     const data = {
         role,
         isLogined,

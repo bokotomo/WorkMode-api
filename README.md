@@ -12,3 +12,7 @@ npm run deploy
 
 ## FRONT  
 https://github.com/bokotomo/WorkMode-front  
+
+## メモ
+今回はプロトタイプなので関係ないが、一時データ以外はDynamoDBでなくRDSが良い。
+RDS使う段階であればAWS RDS Proxyでやる。

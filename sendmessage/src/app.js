@@ -1,4 +1,3 @@
-const apiGatewayAPI = require('./driver/apiGateway');
 const controllerAuthentication = require('./controller/authentication');
 const controllerUser = require('./controller/user');
 
@@ -16,6 +15,12 @@ const routing = async (apigwClient, myConnectionId, postData) => {
         if (err !== null) return [err]
       }
       break;
+    case 'active_user_search':
+      {
+        const [err] = await controllerUser.activeUserSearch(apigwClient, myConnectionId, postData, 'active_user_search');
+        if (err !== null) return [err]
+      }
+      break;
     default:
       return [new Error('not found routing')]
   }
@@ -23,11 +28,7 @@ const routing = async (apigwClient, myConnectionId, postData) => {
   return [null]
 }
 
-module.exports = async event => {
+module.exports = async (event, apigwClient, myConnectionId) => {
   const postData = JSON.parse(event.body).data;
-  const endpoint = event.requestContext.domainName + '/' + event.requestContext.stage;
-  const apigwClient = apiGatewayAPI(endpoint);
-  const myConnectionId = event.requestContext.connectionId;
-
   return await routing(apigwClient, myConnectionId, postData);
 }
