@@ -1,10 +1,11 @@
 
-
-const a = () => {
-  // throw new Error("tomo")
-   //return {e: "toko", h:1}
-   return [null]
+module.exports.add = () => {
+  console.log("111111")
 }
 
-const [a1] = a();
-if (!a1) return console.log(a1)
+const a = () => {
+  console.log("OK")
+  module.exports.add()
+}
+
+a()
