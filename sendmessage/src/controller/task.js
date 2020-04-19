@@ -37,3 +37,21 @@ module.exports.index = async (apigwClient, myConnectionId, postData, role) => {
     };
     return await apiGatewaySend(apigwClient, myConnectionId, data);
 }
+
+module.exports.updateStatus = async (apigwClient, myConnectionId, postData, role) => {
+    const token = postData.token;
+    const [isLogined, userID, err] = await repositoryAuthentication(token);
+    if (err !== null) return [err]
+    if (!isLogined) return [new Error('not login')]
+
+    const taskID = postData.taskId
+    const status = postData.status
+    const [errUpdateStatus] = await repositoryTask.updateStatus(userID, taskID, status);
+    if (errUpdateStatus !== null) return [errUpdateStatus]
+
+    const data = {
+        role,
+        ok: "ok",
+    };
+    return await apiGatewaySend(apigwClient, myConnectionId, data);
+}

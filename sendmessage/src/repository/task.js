@@ -25,8 +25,9 @@ module.exports.create = async (userID, task) => {
 }
 
 module.exports.add = async (userID, task) => {
-    const [a, b, origintasks, errTasks] = await module.exports.index(userID)
+    const [todoList, inprogressList, doneList, errTasks] = await module.exports.index(userID)
     if (errTasks !== null) return [errTasks]
+    const origintasks = [...todoList, ...inprogressList, ...doneList]
 
     // 空なら新規追加
     if (origintasks.length === 0) {
@@ -92,4 +93,35 @@ module.exports.index = async (userID) => {
     const doneList = tasks.filter(task => task.status === 'done')
 
     return [todoList, inprogressList, doneList, null]
+}
+
+module.exports.updateStatus = async (userID, taskID, status) => {
+    const [todoList, inprogressList, doneList, errTasks] = await module.exports.index(userID)
+    if (errTasks !== null) return [errTasks]
+    const origintasks = [...todoList, ...inprogressList, ...doneList]
+
+    const domainTasks = origintasks.map(task => {
+        if (task.id === taskID) task.status = status
+        return task
+    })
+    var params = {
+        TableName: 'workmode_tasks',
+        Key: {
+            userId: userID,
+        },
+        UpdateExpression: "set tasks = :tasks",
+        ExpressionAttributeValues: {
+            ":tasks": domainTasks,
+        },
+        ReturnValues: "UPDATED_NEW"
+    };
+    try {
+        await ddbClient.update(params, (err, data) => {
+            if (err) throw err;
+        }).promise();
+    } catch (err) {
+        return [err]
+    }
+
+    return [null]
 }
