@@ -38,6 +38,13 @@ module.exports.create = async (name, connectionId) => {
             id,
             name,
             connectionId,
+            tasks: [{
+                id: 1,
+                title: 'title',
+            }, {
+                id: 2,
+                title: 'title2',
+            },]
         }
     };
     try {

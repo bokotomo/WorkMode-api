@@ -8,14 +8,7 @@ module.exports = async (apigwClient, myConnectionId, postData, role) => {
     const [isLogined, userID, err] = await repositoryAuthentication(token);
     if (err !== null) return [err]
 
-    // コネクションのユーザID更新
-    const [errConnection] = await repositoryConnection.update(myConnectionId, userID);
-    if (errConnection !== null) return [errConnection]
-
-    // ユーザのコネクションIDの更新
-    const [errUser] = await repositoryUser.update(myConnectionId, userID);
-    if (errUser !== null) return [errUser]
-
+    // 自身へログイン結果を通知
     const data = {
         role,
         isLogined,
@@ -24,11 +17,20 @@ module.exports = async (apigwClient, myConnectionId, postData, role) => {
     if (errSend !== null) return [errSend]
     if (!isLogined) return [null]
 
-    // 全員へ通知
+    // コネクションのユーザID更新
+    const [errConnection] = await repositoryConnection.update(myConnectionId, userID);
+    if (errConnection !== null) return [errConnection]
+
+    // ユーザのコネクションIDの更新
+    const [errUser] = await repositoryUser.update(myConnectionId, userID);
+    if (errUser !== null) return [errUser]
+
+    // ログインしたユーザを全員へ通知
     const [users, errSearch] = await repositoryUser.activerUserSearch()
     if (errSearch !== null) return [errSearch]
 
-    const postCalls = await users.map(async ({ connectionId }) => {
+    // 全員へアクティブなユーザを通知
+    const postCalls = users.map(async ({ connectionId }) => {
         const dataSearch = {
             role: 'active_user_search',
             users,
