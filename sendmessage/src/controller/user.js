@@ -1,15 +1,20 @@
 const apiGatewaySend = require('../driver/apiGatewaySend');
 const repositoryUser = require('../repository/user');
 const repositoryAuthentication = require('../repository/authentication');
+const repositoryConnection = require('../repository/connection');
 
+// トランザクションつける
 module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
     const name = postData.name;
-    const [id, token, err] = await repositoryUser.create(name, myConnectionId)
+    const [userID, token, err] = await repositoryUser.create(name, myConnectionId)
     if (err !== null) return [err]
+
+    const [errConnection] = await repositoryConnection.update(myConnectionId, userID);
+    if (errConnection !== null) return [errConnection]
 
     const data = {
         role,
-        id,
+        id: userID,
         name,
         token,
     };

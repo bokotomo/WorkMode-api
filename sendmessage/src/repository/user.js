@@ -74,7 +74,9 @@ module.exports.activerUserSearch = async () => {
     }
     const users = userData.Items
         .filter(({ id }) => userIds.includes(id))
-        .map(({ id, name }) => { id, name })
+        .map(({ id, name }) => {
+            return { id, name }
+        })
 
     return [users, null]
 }
