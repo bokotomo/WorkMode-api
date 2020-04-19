@@ -1,6 +1,6 @@
 const apiGatewayAPI = require('./src/driver/apiGateway');
-const response = require('./src/response');
 const main = require('./src/app');
+const response = require('./src/response');
 
 exports.handler = async event => {
     const endpoint = event.requestContext.domainName + '/' + event.requestContext.stage;

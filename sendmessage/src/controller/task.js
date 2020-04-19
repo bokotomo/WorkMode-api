@@ -10,9 +10,12 @@ module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
     if (!isLogined) return [new Error('not login')]
 
     const task = postData.task;
+    const [createdTask, errCreate] = await repositoryTask.create(userID, task);
+    if (errCreate !== null) return [errCreate]
+
     const data = {
         role,
-        task,
+        task: createdTask,
     };
     return await apiGatewaySend(apigwClient, myConnectionId, data);
 }
