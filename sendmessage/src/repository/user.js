@@ -60,10 +60,7 @@ module.exports.activerUserSearch = async () => {
     } catch (err) {
         return [[], err]
     }
-    let connectionIds = [];
-    connectionData.Items.map(({ connectionId }) => {
-        connectionIds.push(connectionId);
-    });
+    const userIds = connectionData.Items.map(({ id }) => id);
 
     // [TODO] 分割
     const paramsUser = {
@@ -75,14 +72,9 @@ module.exports.activerUserSearch = async () => {
     } catch (err) {
         return [[], err]
     }
-    let users = [];
-    connectionData.Items.map(({ id, name }) => {
-        if (!connectionIds.includes(id)) continue;
-        users.push({
-            id,
-            name,
-        });
-    });
+    const users = userData.Items
+        .filter(({ id }) => userIds.includes(id))
+        .map(({ id, name }) => { id, name })
 
     return [users, null]
 }
