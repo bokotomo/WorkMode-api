@@ -66,10 +66,11 @@ module.exports.add = async (userID, task) => {
         id,
     };
     const domainTasks = [...origintasks, domainTask]
-    const [errUpdateTask] = updateTasks(userID, domainTasks)
-    if (errUpdateTask !== null) return [errUpdateTask]
+    const [errUpdateTask] = await updateTasks(userID, domainTasks)
+    if (errUpdateTask !== null) return [[], errUpdateTask]
+    const domainTaskTodos = domainTasks.filter(task => task.status === 'todo')
 
-    return [domainTasks, null]
+    return [domainTaskTodos, null]
 }
 
 module.exports.index = async (userID) => {
@@ -112,7 +113,7 @@ module.exports.updateStatus = async (userID, taskID, status) => {
         return task
     })
 
-    return updateTasks(userID, domainTasks)
+    return await updateTasks(userID, domainTasks)
 }
 
 module.exports.delete = async (userID, taskID) => {
@@ -122,5 +123,5 @@ module.exports.delete = async (userID, taskID) => {
 
     const domainTasks = origintasks.filter(task => task.id !== taskID)
 
-    return updateTasks(userID, domainTasks)
+    return await updateTasks(userID, domainTasks)
 }
