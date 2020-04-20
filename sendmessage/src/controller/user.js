@@ -24,17 +24,24 @@ module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
     const [errSend] = await apiGatewaySend(apigwClient, myConnectionId, data);
     if (errSend !== null) return [errSend]
 
-    // 全員へ通知
     const [users, errSearch] = await repositoryUser.activerUserSearch()
     if (errSearch !== null) return [errSearch]
-    users.forEach(async ({ connectionId }) => {
-        const data = {
+
+    // 全員へ通知
+    const postCalls = users.map(async ({ connectionId }) => {
+        const dataActiveUser = {
             role: 'active_user_search',
             users,
         };
-        const [errActiveUser] = await apiGatewaySend(apigwClient, connectionId, data);
-        if (errActiveUser !== null) return [errConnection]
+        const [errActiveUser] = await apiGatewaySend(apigwClient, connectionId, dataActiveUser);
+        if (errActiveUser !== null) return [errActiveUser]
     });
+
+    try {
+        await Promise.all(postCalls);
+    } catch (err) {
+        return [err]
+    }
 
     return [null]
 }

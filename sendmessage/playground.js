@@ -1,11 +1,15 @@
 
-module.exports.add = () => {
-  console.log("111111")
-}
+const a = [
+  {
+    connectionId: 'LRH1ocLsNjMCFng=',
+    id: 'f7sx6d8k97ylbx5',
+    name: 'ok',
+    color: '#320c69'
+  }
+]
 
-const a = () => {
-  console.log("OK")
-  module.exports.add()
-}
+a.forEach(async ({ connectionId }) => {
+  console.log(connectionId)
+})
 
-a()
+

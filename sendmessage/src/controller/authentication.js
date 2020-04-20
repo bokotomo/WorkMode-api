@@ -50,13 +50,13 @@ module.exports = async (apigwClient, myConnectionId, postData, role) => {
             users,
         };
         const [errActiveUser] = await apiGatewaySend(apigwClient, connectionId, dataSearch);
-        if (errActiveUser !== null) throw errConnection
+        if (errActiveUser !== null) throw errActiveUser
     });
 
     try {
         await Promise.all(postCalls);
-    } catch (e) {
-        return [e]
+    } catch (err) {
+        return [err]
     }
 
     return [null]

@@ -51,7 +51,6 @@ module.exports.create = async (name, connectionId) => {
     return [id, token, color, null]
 }
 
-
 module.exports.activerUserSearch = async () => {
     const params = {
         TableName: 'workmode_connections',
@@ -62,9 +61,9 @@ module.exports.activerUserSearch = async () => {
     } catch (err) {
         return [[], err]
     }
-    const userIds = connectionData.Items.map(({ id }) => id);
+    const userIds = connectionData.Items.filter(({ id }) => id).map(({ id }) => id);
 
-    // [TODO] 分割
+    // [TODO] 分割, DB構成(一時データテーブルと永続化テーブルを分けるべき)。DyanamoDBはINで検索できない。これはユーザ増えたら死ぬコード。
     const paramsUser = {
         TableName: 'workmode_users',
     };
@@ -74,11 +73,7 @@ module.exports.activerUserSearch = async () => {
     } catch (err) {
         return [[], err]
     }
-    const users = userData.Items
-        .filter(({ id }) => userIds.includes(id))
-    // .map(({ id, name }) => {
-    //     return { id, name }
-    // })
+    const users = userData.Items.filter(({ id }) => userIds.includes(id))
 
     return [users, null]
 }
