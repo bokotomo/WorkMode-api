@@ -125,3 +125,31 @@ module.exports.updateStatus = async (userID, taskID, status) => {
 
     return [null]
 }
+
+module.exports.delete = async (userID, taskID) => {
+    const [todoList, inprogressList, doneList, errTasks] = await module.exports.index(userID)
+    if (errTasks !== null) return [errTasks]
+    const origintasks = [...todoList, ...inprogressList, ...doneList]
+
+    const domainTasks = origintasks.filter(task => task.id !== taskID)
+    var params = {
+        TableName: 'workmode_tasks',
+        Key: {
+            userId: userID,
+        },
+        UpdateExpression: "set tasks = :tasks",
+        ExpressionAttributeValues: {
+            ":tasks": domainTasks,
+        },
+        ReturnValues: "UPDATED_NEW"
+    };
+    try {
+        await ddbClient.update(params, (err, data) => {
+            if (err) throw err;
+        }).promise();
+    } catch (err) {
+        return [err]
+    }
+
+    return [null]
+}

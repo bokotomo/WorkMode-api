@@ -34,6 +34,12 @@ module.exports = async (apigwClient, myConnectionId, postData) => {
                 if (err !== null) return [err]
             }
             break;
+        case 'task_delete':
+            {
+                const [err] = await controllerTask.delete(apigwClient, myConnectionId, postData, 'task_delete');
+                if (err !== null) return [err]
+            }
+            break;
         case 'task_index':
             {
                 const [err] = await controllerTask.index(apigwClient, myConnectionId, postData, 'task_index');

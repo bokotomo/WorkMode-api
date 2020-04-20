@@ -51,7 +51,24 @@ module.exports.updateStatus = async (apigwClient, myConnectionId, postData, role
 
     const data = {
         role,
-        ok: "ok",
+        success: true,
+    };
+    return await apiGatewaySend(apigwClient, myConnectionId, data);
+}
+
+module.exports.delete = async (apigwClient, myConnectionId, postData, role) => {
+    const token = postData.token;
+    const [isLogined, userID, err] = await repositoryAuthentication(token);
+    if (err !== null) return [err]
+    if (!isLogined) return [new Error('not login')]
+
+    const taskID = postData.taskId
+    const [errDelete] = await repositoryTask.delete(userID, taskID);
+    if (errDelete !== null) return [errDelete]
+
+    const data = {
+        role,
+        success: true,
     };
     return await apiGatewaySend(apigwClient, myConnectionId, data);
 }
