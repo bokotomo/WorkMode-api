@@ -17,7 +17,7 @@ module.exports.create = async (name, connectionId) => {
     const id = uniqid();
     const SECRET_KEY = process.env.SECRET_KEY;
     const [token, err] = createToken(id, SECRET_KEY);
-    if (err !== null) return ['', '', err];
+    if (err !== null) return ['', '', '', err];
 
     const putParamsToken = {
         TableName: 'workmode_token',
@@ -29,24 +29,26 @@ module.exports.create = async (name, connectionId) => {
     try {
         await ddbClient.put(putParamsToken).promise();
     } catch (err) {
-        return ['', '', err]
+        return ['', '', '', err]
     }
 
+    const color = "#" + Math.floor(Math.random() * 16777215).toString(16);
     const putParams = {
         TableName: 'workmode_users',
         Item: {
             id,
             name,
             connectionId,
+            color,
         }
     };
     try {
         await ddbClient.put(putParams).promise();
     } catch (err) {
-        return ['', '', err]
+        return ['', '', '', err]
     }
 
-    return [id, token, null]
+    return [id, token, color, null]
 }
 
 

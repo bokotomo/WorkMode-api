@@ -6,7 +6,7 @@ const repositoryConnection = require('../repository/connection');
 // トランザクションつける
 module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
     const name = postData.name;
-    const [userID, token, err] = await repositoryUser.create(name, myConnectionId)
+    const [userID, token, color, err] = await repositoryUser.create(name, myConnectionId)
     if (err !== null) return [err]
 
     // コネクションにID紐づける
@@ -18,6 +18,7 @@ module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
         role,
         id: userID,
         name,
+        color,
         token,
     };
     const [errSend] = await apiGatewaySend(apigwClient, myConnectionId, data);
