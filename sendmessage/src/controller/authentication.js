@@ -41,13 +41,17 @@ module.exports = async (apigwClient, myConnectionId, postData, role) => {
 
     // ログインしたユーザを全員へ通知
     const [users, errSearch] = await repositoryUser.activerUserSearch()
-    if (errSearch !== null) return [errSearch]
+    if (errSearch !== null) return [errSearch];
 
     // 全員へアクティブなユーザを通知
-    const postCalls = users.map(async ({ connectionId }) => {
+    const postCalls = users.map(async ({ connectionId, id }) => {
+        const sortedUsers = [
+            ...users.filter(user => user.id === id),
+            ...users.filter(user => user.id !== id),
+        ];
         const dataSearch = {
             role: 'active_user_search',
-            users,
+            users: sortedUsers,
         };
         const [errActiveUser] = await apiGatewaySend(apigwClient, connectionId, dataSearch);
         if (errActiveUser !== null) throw errActiveUser

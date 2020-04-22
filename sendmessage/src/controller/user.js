@@ -28,10 +28,14 @@ module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
     if (errSearch !== null) return [errSearch]
 
     // 全員へ通知
-    const postCalls = users.map(async ({ connectionId }) => {
+    const postCalls = users.map(async ({ connectionId, id }) => {
+        const sortedUsers = [
+            ...users.filter(user => user.id === id),
+            ...users.filter(user => user.id !== id),
+        ];
         const dataActiveUser = {
             role: 'active_user_search',
-            users,
+            users: sortedUsers,
         };
         const [errActiveUser] = await apiGatewaySend(apigwClient, connectionId, dataActiveUser);
         if (errActiveUser !== null) return [errActiveUser]
