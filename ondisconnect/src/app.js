@@ -3,12 +3,12 @@ const ddbClient = require('./ddb');
 
 // コネクションを切る時
 // KVSの自身のコネクションIDを削除する。
-exports.handler = async event => {
+exports.handler = async (event) => {
   const deleteParams = {
     TableName: process.env.TABLE_NAME,
     Key: {
-      connectionId: event.requestContext.connectionId
-    }
+      connectionId: event.requestContext.connectionId,
+    },
   };
 
   try {
@@ -23,14 +23,18 @@ exports.handler = async event => {
       role: 'active_user_search',
       users,
     };
-    const [errActiveUser] = await apiGatewaySend(apigwClient, connectionId, dataSearch);
-    if (errActiveUser !== null) throw errConnection
+    const [errActiveUser] = await apiGatewaySend(
+      apigwClient,
+      connectionId,
+      dataSearch
+    );
+    if (errActiveUser !== null) throw errConnection;
   });
 
   try {
     await Promise.all(postCalls);
   } catch (e) {
-    return [e]
+    return [e];
   }
 
   return response(200, 'Disconnected.');
