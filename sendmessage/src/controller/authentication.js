@@ -3,6 +3,7 @@ const repositoryAuthentication = require('../repository/authentication');
 const repositoryConnection = require('../repository/connection');
 const repositoryUser = require('../repository/user');
 const repositoryTask = require('../repository/task');
+const repositoryMessage = require('../repository/message');
 
 // [TODO] 関数にしサービスにまとめる
 module.exports = async (apigwClient, myConnectionId, postData, role) => {
@@ -39,6 +40,20 @@ module.exports = async (apigwClient, myConnectionId, postData, role) => {
     dataTasks
   );
   if (errSendTasks !== null) return [errSendTasks];
+
+  // 自身へタスク進捗メッセージ一覧を返す
+  const [messages, errMessages] = await repositoryMessage.index(userID);
+  if (errMessages !== null) return [errMessages];
+  const dataMessages = {
+    role: 'message_progress_index',
+    messages,
+  };
+  const [errSendMessages] = await apiGatewaySend(
+    apigwClient,
+    myConnectionId,
+    dataMessages
+  );
+  if (errSendMessages !== null) return [errSendMessages];
 
   // コネクションのユーザID更新
   const [errConnection] = await repositoryConnection.update(

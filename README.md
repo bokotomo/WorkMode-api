@@ -1,4 +1,5 @@
 # WorkMode-api
+
 ```
 wscat -c wss://~~~
 
@@ -6,14 +7,18 @@ wscat -c wss://~~~
 ```
 
 ## Upload
+
 ```
 npm run deploy
 ```
 
-## FRONT  
-https://github.com/bokotomo/WorkMode-front  
+## FRONT
+
+https://github.com/bokotomo/WorkMode-front
 
 ## メモ
-今回はプロトタイプなので関係ないが、一時データ以外はDynamoDBでなくRDSが良い。  
-RDS使う段階であればAWS RDS Proxyでやる。  
-普通にGoでやれば良かったかも。    
+
+今回はプロトタイプなので関係ないが、一時データ以外は DynamoDB でなく RDS が良い。  
+RDS 使う段階であれば AWS RDS Proxy でやる。  
+普通に Go でやれば良かったかも。  
+プロトタイプなので eslint はつけてない。
