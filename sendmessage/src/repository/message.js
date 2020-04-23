@@ -44,7 +44,9 @@ module.exports.index = async (groupID) => {
   const [users, errUserSearch] = await repositoryUser.getAll();
   if (errUserSearch !== null) return [[], errUserSearch];
 
-  const responseMessages = messages.map((message) => {
+  const showNumber = 10;
+  const showedMessages = messages.slice(0, showNumber);
+  const responseMessages = showedMessages.map((message) => {
     const targetUser = users.find((user) => user.id === message.userId);
     const targetTaskDetail = tasks.find(
       (task) => task.userId === message.userId
