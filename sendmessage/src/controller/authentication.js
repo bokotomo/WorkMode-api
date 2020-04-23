@@ -42,7 +42,8 @@ module.exports = async (apigwClient, myConnectionId, postData, role) => {
   if (errSendTasks !== null) return [errSendTasks];
 
   // 自身へタスク進捗メッセージ一覧を返す
-  const [messages, errMessages] = await repositoryMessage.index(userID);
+  const groupID = 'id1';
+  const [messages, errMessages] = await repositoryMessage.index(groupID);
   if (errMessages !== null) return [errMessages];
   const dataMessages = {
     role: 'message_progress_index',

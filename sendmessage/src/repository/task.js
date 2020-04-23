@@ -83,6 +83,21 @@ module.exports.add = async (userID, task) => {
   return [domainTaskTodos, null];
 };
 
+// dynamoだときつい
+module.exports.getAll = async () => {
+  const params = {
+    TableName: 'workmode_tasks',
+  };
+  let data;
+  try {
+    data = await ddbClient.scan(params).promise();
+  } catch (err) {
+    return [[], err];
+  }
+  const tasks = data.Items;
+  return [tasks, null];
+};
+
 module.exports.index = async (userID) => {
   const params = {
     TableName: 'workmode_tasks',

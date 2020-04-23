@@ -51,6 +51,21 @@ module.exports.create = async (name, connectionId) => {
   return [id, token, color, null];
 };
 
+module.exports.getAll = async () => {
+  const paramsUser = {
+    TableName: 'workmode_users',
+  };
+  let userData;
+  try {
+    userData = await ddbClient.scan(paramsUser).promise();
+  } catch (err) {
+    return [[], err];
+  }
+  const users = userData.Items;
+
+  return [users, null];
+};
+
 module.exports.activerUserSearch = async () => {
   const params = {
     TableName: 'workmode_connections',

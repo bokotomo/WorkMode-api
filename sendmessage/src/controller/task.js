@@ -1,6 +1,7 @@
 const apiGatewaySend = require('../driver/apiGatewaySend');
 const repositoryTask = require('../repository/task');
 const repositoryAuthentication = require('../repository/authentication');
+const repositoryMessage = require('../repository/message');
 
 // トランザクションつける
 module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
@@ -56,6 +57,7 @@ module.exports.updateStatus = async (
 
   const taskID = postData.taskId;
   const status = postData.status;
+  // ステータス変更
   const [errUpdateStatus] = await repositoryTask.updateStatus(
     userID,
     taskID,
@@ -67,7 +69,26 @@ module.exports.updateStatus = async (
     role,
     success: true,
   };
-  return await apiGatewaySend(apigwClient, myConnectionId, data);
+  const [errSendUpdateStatus] = await apiGatewaySend(
+    apigwClient,
+    myConnectionId,
+    data
+  );
+  if (errSendUpdateStatus !== null) return [errSendUpdateStatus];
+
+  if (status !== 'inprogress' && status !== 'done') return [null];
+
+  // メッセージ追加
+  const groupID = postData.groupId || 'id1';
+  const [errMessages] = await repositoryMessage.add(
+    groupID,
+    userID,
+    taskID,
+    status
+  );
+  if (errMessages !== null) return [errMessages];
+
+  return [null];
 };
 
 module.exports.delete = async (apigwClient, myConnectionId, postData, role) => {
