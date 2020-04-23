@@ -66,6 +66,36 @@ module.exports.getAll = async () => {
   return [users, null];
 };
 
+module.exports.get = async (userID) => {
+  const params = {
+    TableName: 'workmode_users',
+    KeyConditionExpression: '#key = :val',
+    ExpressionAttributeValues: {
+      ':val': userID,
+    },
+    ExpressionAttributeNames: {
+      '#key': 'id',
+    },
+  };
+
+  let user = {};
+  try {
+    await ddbClient
+      .query(params, (err, data) => {
+        if (err) throw err;
+        if (data.Count !== 0) {
+          isLogined = true;
+          user = data.Items[0];
+        }
+      })
+      .promise();
+  } catch (err) {
+    return [[], [], [], err];
+  }
+
+  return [user, null];
+};
+
 module.exports.activerUserSearch = async () => {
   const params = {
     TableName: 'workmode_connections',

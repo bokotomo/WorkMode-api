@@ -6,7 +6,7 @@ const ddbClient = require('./ddb');
 // KVSへ自身のコネクションIDを保存する。
 exports.handler = async (event) => {
   const putParams = {
-    TableName: process.env.TABLE_NAME,
+    TableName: 'workmode_connections',
     Item: {
       connectionId: event.requestContext.connectionId,
     },

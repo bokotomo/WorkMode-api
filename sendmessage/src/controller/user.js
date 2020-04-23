@@ -2,6 +2,7 @@ const apiGatewaySend = require('../driver/apiGatewaySend');
 const repositoryUser = require('../repository/user');
 const repositoryAuthentication = require('../repository/authentication');
 const repositoryConnection = require('../repository/connection');
+const repositoryMessage = require('../repository/message');
 
 // トランザクションつける
 module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
@@ -30,10 +31,25 @@ module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
   const [errSend] = await apiGatewaySend(apigwClient, myConnectionId, data);
   if (errSend !== null) return [errSend];
 
+  // 自身へタスク進捗メッセージ一覧を返す
+  const groupID = 'id1';
+  const [messages, errMessages] = await repositoryMessage.index(groupID);
+  if (errMessages !== null) return [errMessages];
+  const dataMessages = {
+    role: 'message_progress_index',
+    messages,
+  };
+  const [errSendMessages] = await apiGatewaySend(
+    apigwClient,
+    myConnectionId,
+    dataMessages
+  );
+  if (errSendMessages !== null) return [errSendMessages];
+
+  // アクティブなユーザを全員へ通知
   const [users, errSearch] = await repositoryUser.activerUserSearch();
   if (errSearch !== null) return [errSearch];
 
-  // 全員へ通知
   const postCalls = users.map(async ({ connectionId, id }) => {
     const sortedUsers = [
       ...users.filter((user) => user.id === id),

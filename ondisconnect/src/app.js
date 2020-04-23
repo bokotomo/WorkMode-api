@@ -5,7 +5,7 @@ const ddbClient = require('./ddb');
 // KVSの自身のコネクションIDを削除する。
 exports.handler = async (event) => {
   const deleteParams = {
-    TableName: process.env.TABLE_NAME,
+    TableName: 'workmode_connections',
     Key: {
       connectionId: event.requestContext.connectionId,
     },
