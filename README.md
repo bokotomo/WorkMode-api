@@ -21,4 +21,4 @@ https://github.com/bokotomo/WorkMode-front
 今回はプロトタイプなので関係ないが、一時データ以外は DynamoDB でなく RDS が良い。  
 RDS 使う段階であれば AWS RDS Proxy でやる。  
 普通に Go でやれば良かったかも。  
-プロトタイプなので eslint はつけてない。
+eslint もつけてない。

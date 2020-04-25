@@ -1,12 +1,3 @@
-const a = [
-  {
-    connectionId: 'LRH1ocLsNjMCFng=',
-    id: 'f7sx6d8k97ylbx5',
-    name: 'ok',
-    color: '#320c69',
-  },
-];
+const a = [1, 2, 3, 4, 5];
 
-a.forEach(async ({ connectionId }) => {
-  console.log(connectionId);
-});
+console.log(a.slice(a.length - 3, a.length));

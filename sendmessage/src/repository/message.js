@@ -44,8 +44,13 @@ module.exports.index = async (groupID) => {
   const [users, errUserSearch] = await repositoryUser.getAll();
   if (errUserSearch !== null) return [[], errUserSearch];
 
+  // rdsへ移行
   const showNumber = 10;
-  const showedMessages = messages.slice(0, showNumber);
+  const messageLength = messages.length;
+  const showedMessages = messages.slice(
+    messageLength - showNumber,
+    messageLength
+  );
   const responseMessages = showedMessages.map((message) => {
     const targetUser = users.find((user) => user.id === message.userId);
     const targetTaskDetail = tasks.find(
@@ -116,6 +121,7 @@ module.exports.update = async (groupID, messages) => {
   return [null];
 };
 
+// add is メッセージの新規追加
 module.exports.add = async (groupID, userID, taskID, status) => {
   const [messages, err] = await module.exports.get(groupID);
   if (err !== null) return [[], err];
@@ -159,4 +165,21 @@ module.exports.add = async (groupID, userID, taskID, status) => {
   );
   if (errGetMessage !== null) return [[], errGetMessage];
   return [addedMessage, null];
+};
+
+// メッセージの削除
+module.exports.deleteByTaskID = async (groupID, taskID) => {
+  const [messages, errGet] = await module.exports.get(groupID);
+  if (errGet !== null) return [[], errGet];
+
+  const deletedMessages = messages.filter(
+    (message) => message.taskId === taskID
+  );
+  const domainMessages = messages.filter(
+    (message) => message.taskId !== taskID
+  );
+  const [errUpdate] = await module.exports.update(groupID, domainMessages);
+  if (errUpdate !== null) return [[], errUpdate];
+
+  return [deletedMessages, null];
 };

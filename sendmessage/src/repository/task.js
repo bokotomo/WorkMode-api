@@ -83,7 +83,7 @@ module.exports.add = async (userID, task) => {
   return [domainTaskTodos, null];
 };
 
-// dynamoだときつい
+// DynamoだときついからRDBにしたいでもお金かかるからしばらくDynamo
 module.exports.getAll = async () => {
   const params = {
     TableName: 'workmode_tasks',

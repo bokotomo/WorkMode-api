@@ -66,6 +66,7 @@ module.exports.updateStatus = async (
   );
   if (errUpdateStatus !== null) return [errUpdateStatus];
 
+  // ステータス変更の完了を通知する
   const data = {
     role,
     success: true,
@@ -77,9 +78,10 @@ module.exports.updateStatus = async (
   );
   if (errSendUpdateStatus !== null) return [errSendUpdateStatus];
 
-  if (status !== 'inprogress' && status !== 'done') return [null];
+  // TODOタスクはメッセージに追加しない
+  if (status === 'todo') return [null];
 
-  // メッセージ追加
+  // メッセージをDBへ追加
   const groupID = postData.groupId || 'id1';
   const [addedMessage, errMessages] = await repositoryMessage.add(
     groupID,
@@ -90,10 +92,10 @@ module.exports.updateStatus = async (
   if (errMessages !== null) return [errMessages];
 
   // 自分以外へ送信
-  const [users, errSearch] = await repositoryUser.activerUserSearch();
+  const [connectionUsers, errSearch] = await repositoryUser.activerUserSearch();
   if (errSearch !== null) return [errSearch];
 
-  const postCalls = users.map(async ({ connectionId, id }) => {
+  const postCalls = connectionUsers.map(async ({ connectionId }) => {
     const dataSearch = {
       role: 'message_progress_added',
       message: addedMessage,
@@ -120,13 +122,51 @@ module.exports.delete = async (apigwClient, myConnectionId, postData, role) => {
   if (err !== null) return [err];
   if (!isLogined) return [new Error('not login')];
 
+  // タスクの削除
   const taskID = postData.taskId;
   const [errDelete] = await repositoryTask.delete(userID, taskID);
   if (errDelete !== null) return [errDelete];
+
+  // メッセージの削除
+  const groupID = postData.groupId || 'id1';
+  const [
+    deletedMessages,
+    errDeleteMessage,
+  ] = await repositoryMessage.deleteByTaskID(groupID, taskID);
+  if (errDeleteMessage !== null) return [errDeleteMessage];
 
   const data = {
     role,
     success: true,
   };
-  return await apiGatewaySend(apigwClient, myConnectionId, data);
+  const [errDeleteSend] = await apiGatewaySend(
+    apigwClient,
+    myConnectionId,
+    data
+  );
+  if (errDeleteSend !== null) return [errDeleteSend];
+
+  // 全員へ送信
+  const [connectionUsers, errSearch] = await repositoryUser.activerUserSearch();
+  if (errSearch !== null) return [errSearch];
+
+  const postCalls = connectionUsers.map(async ({ connectionId }) => {
+    const dataSearch = {
+      role: 'message_progress_deleted',
+      messages: deletedMessages,
+    };
+    const [errActiveUser] = await apiGatewaySend(
+      apigwClient,
+      connectionId,
+      dataSearch
+    );
+    if (errActiveUser !== null) throw errActiveUser;
+  });
+  try {
+    await Promise.all(postCalls);
+  } catch (err) {
+    return [err];
+  }
+
+  return [null];
 };
