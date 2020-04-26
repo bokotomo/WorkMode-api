@@ -9,7 +9,9 @@ exports.handler = async (event) => {
   const apigwClient = apiGatewayAPI(endpoint);
   const myConnectionId = event.requestContext.connectionId;
   const [err] = await main(event, apigwClient, myConnectionId);
-  if (err !== null)
+  if (err !== null) {
+    console.info(err);
     return await response(apigwClient, myConnectionId, 500, err.stack);
+  }
   return await response(apigwClient, myConnectionId, 200, 'Data sent.');
 };

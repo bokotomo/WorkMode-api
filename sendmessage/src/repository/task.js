@@ -1,5 +1,6 @@
 const ddbClient = require('../driver/ddb');
-var uniqid = require('uniqid');
+const uniqid = require('uniqid');
+const moment = require('moment');
 
 const updateTasks = async (userID, domainTasks) => {
   var params = {
@@ -28,9 +29,15 @@ const updateTasks = async (userID, domainTasks) => {
 
 module.exports.create = async (userID, task) => {
   const id = uniqid();
+  const createdAt = moment(new Date()).format('YYYY/MM/DD HH:mm:ss');
   const domainTask = {
-    ...task,
     id,
+    title: task.title ? task.title : '-',
+    detail: task.detail ? task.detail : '-',
+    status: task.status ? task.status : '-',
+    time: task.time ? task.time : 0,
+    startTime: '-',
+    createdAt,
   };
   const tasks = [domainTask];
   const putParams = {
@@ -71,9 +78,15 @@ module.exports.add = async (userID, task) => {
 
   // 空でないなら更新
   const id = uniqid();
+  const createdAt = moment(new Date()).format('YYYY/MM/DD HH:mm:ss');
   const domainTask = {
-    ...task,
     id,
+    title: task.title ? task.title : '-',
+    detail: task.detail ? task.detail : '-',
+    status: task.status ? task.status : '-',
+    time: task.time ? task.time : '0',
+    createdAt,
+    startTime: '-',
   };
   const domainTasks = [...origintasks, domainTask];
   const [errUpdateTask] = await updateTasks(userID, domainTasks);
@@ -141,7 +154,12 @@ module.exports.updateStatus = async (userID, taskID, status) => {
   const origintasks = [...todoList, ...inprogressList, ...doneList];
 
   const domainTasks = origintasks.map((task) => {
-    if (task.id === taskID) task.status = status;
+    if (task.id === taskID) {
+      const oldStatus = task.status;
+      if (oldStatus === 'todo' && status === 'inprogress')
+        task.startTime = moment(new Date()).format('YYYY/MM/DD HH:mm:ss');
+      task.status = status ? status : '-';
+    }
     return task;
   });
 
@@ -178,8 +196,8 @@ module.exports.update = async (userID, task) => {
     if (item.id !== task.id) {
       return item;
     }
-    item.detail = task.detail;
-    item.time = task.time;
+    item.detail = task.detail ? task.detail : '-';
+    item.time = task.time ? task.time : 0;
     return item;
   });
 
