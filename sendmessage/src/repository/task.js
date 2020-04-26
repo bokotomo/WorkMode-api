@@ -162,3 +162,26 @@ module.exports.delete = async (userID, taskID) => {
 
   return await updateTasks(userID, domainTasks);
 };
+
+// detailとtimeのみ更新
+module.exports.update = async (userID, task) => {
+  const [
+    todoList,
+    inprogressList,
+    doneList,
+    errTasks,
+  ] = await module.exports.index(userID);
+  if (errTasks !== null) return [errTasks];
+  const origintasks = [...todoList, ...inprogressList, ...doneList];
+
+  const domainTasks = origintasks.map((item) => {
+    if (item.id !== task.id) {
+      return item;
+    }
+    item.detail = task.detail;
+    item.time = task.time;
+    return item;
+  });
+
+  return await updateTasks(userID, domainTasks);
+};

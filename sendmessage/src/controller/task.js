@@ -170,3 +170,17 @@ module.exports.delete = async (apigwClient, myConnectionId, postData, role) => {
 
   return [null];
 };
+
+module.exports.update = async (apigwClient, myConnectionId, postData, role) => {
+  const token = postData.token;
+  const [isLogined, userID, err] = await repositoryAuthentication(token);
+  if (err !== null) return [err];
+  if (!isLogined) return [new Error('not login')];
+
+  // タスクの更新
+  const task = postData.task;
+  const [errUpdate] = await repositoryTask.update(userID, task);
+  if (errUpdate !== null) return [errUpdate];
+
+  return [null];
+};

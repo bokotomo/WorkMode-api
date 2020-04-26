@@ -64,6 +64,16 @@ module.exports = async (apigwClient, myConnectionId, postData) => {
       if (err !== null) return [err];
       break;
     }
+    case 'task_update': {
+      const [err] = await controllerTask.update(
+        apigwClient,
+        myConnectionId,
+        postData,
+        'task_update'
+      );
+      if (err !== null) return [err];
+      break;
+    }
     case 'task_index': {
       const [err] = await controllerTask.index(
         apigwClient,
