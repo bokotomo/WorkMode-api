@@ -4,7 +4,7 @@ const repositoryAuthentication = require('../repository/authentication');
 const repositoryConnection = require('../repository/connection');
 const repositoryMessage = require('../repository/message');
 
-// トランザクションつける
+// RDBにしてトランザクションつける
 module.exports.create = async (apigwClient, myConnectionId, postData, role) => {
   const name = postData.name;
   const [userID, token, color, err] = await repositoryUser.create(

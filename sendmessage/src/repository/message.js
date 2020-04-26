@@ -44,13 +44,11 @@ module.exports.index = async (groupID) => {
   const [users, errUserSearch] = await repositoryUser.getAll();
   if (errUserSearch !== null) return [[], errUserSearch];
 
-  // rdsへ移行
+  // RDSへ移行
   const showNumber = 10;
   const messageLength = messages.length;
-  const showedMessages = messages.slice(
-    messageLength - showNumber,
-    messageLength
-  );
+  const diss = messageLength - showNumber > 0 ? messageLength - showNumber : 0;
+  const showedMessages = messages.slice(diss, messageLength);
   const responseMessages = showedMessages.map((message) => {
     const targetUser = users.find((user) => user.id === message.userId);
     const targetTaskDetail = tasks.find(
