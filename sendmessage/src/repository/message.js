@@ -59,6 +59,7 @@ module.exports.index = async (groupID) => {
     );
     return {
       id: message.id,
+      userId: targetUser.id,
       userName: targetUser.name,
       userColor: targetUser.color,
       text: targetTask.title,

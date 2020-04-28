@@ -15,6 +15,7 @@ module.exports = async (apigwClient, myConnectionId, postData, role) => {
   const data = {
     role,
     isLogined,
+    id: userID,
   };
   const [errSend] = await apiGatewaySend(apigwClient, myConnectionId, data);
   if (errSend !== null) return [errSend];

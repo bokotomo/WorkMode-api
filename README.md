@@ -6,7 +6,7 @@ wscat -c wss://~~~
 {"action":"sendmessage", "data":"hello world"}
 ```
 
-## Upload
+## upload to Lambda
 
 ```
 npm run deploy
