@@ -14,12 +14,12 @@ module.exports = async (apigwClient, myConnectionId, postData) => {
       if (err !== null) return [err];
       break;
     }
-    case 'user_create': {
+    case 'user_create_guest': {
       const [err] = await controllerUser.create(
         apigwClient,
         myConnectionId,
         postData,
-        'user_create'
+        'user_create_guest'
       );
       if (err !== null) return [err];
       break;
