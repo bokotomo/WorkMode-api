@@ -6,7 +6,16 @@ const repositoryTask = require('../repository/task');
 const repositoryMessage = require('../repository/message');
 
 // [TODO] 関数にしサービスにまとめる
-module.exports = async (apigwClient, myConnectionId, postData, role) => {
+module.exports.signin = async (apigwClient, myConnectionId, postData, role) => {
+  const token = postData.token;
+};
+
+module.exports.authentication = async (
+  apigwClient,
+  myConnectionId,
+  postData,
+  role
+) => {
   const token = postData.token;
   const [isLogined, userID, err] = await repositoryAuthentication(token);
   if (err !== null) return [err];

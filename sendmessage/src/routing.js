@@ -5,7 +5,7 @@ const controllerTask = require('./controller/task');
 module.exports = async (apigwClient, myConnectionId, postData) => {
   switch (postData.role) {
     case 'authentication': {
-      const [err] = await controllerAuthentication(
+      const [err] = await controllerAuthentication.authentication(
         apigwClient,
         myConnectionId,
         postData,
@@ -14,8 +14,28 @@ module.exports = async (apigwClient, myConnectionId, postData) => {
       if (err !== null) return [err];
       break;
     }
-    case 'user_create_guest': {
+    case 'user_create': {
       const [err] = await controllerUser.create(
+        apigwClient,
+        myConnectionId,
+        postData,
+        'user_create'
+      );
+      if (err !== null) return [err];
+      break;
+    }
+    case 'user_signin': {
+      const [err] = await controllerAuthentication.signin(
+        apigwClient,
+        myConnectionId,
+        postData,
+        'user_signin'
+      );
+      if (err !== null) return [err];
+      break;
+    }
+    case 'user_create_guest': {
+      const [err] = await controllerUser.createGuest(
         apigwClient,
         myConnectionId,
         postData,
