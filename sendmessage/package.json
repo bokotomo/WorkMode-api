@@ -4,7 +4,7 @@
   "main": "./index.js",
   "dependencies": {
     "jsonwebtoken": "^8.5.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "uniqid": "^5.2.0"
   },
   "scripts": {
